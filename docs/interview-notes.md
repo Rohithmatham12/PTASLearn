@@ -42,3 +42,22 @@ The decoder is not a full x86 implementation. It deliberately supports a defensi
 - `0xEB`: short relative jump
 
 The important interview point is byte-level parsing: opcode dispatch, little-endian immediate extraction, ModR/M field decoding, and relative target calculation.
+
+## Golden Reference Model
+
+`GoldenCpuModel` is the software reference used for validation. It decodes bytes, executes the supported instruction subset, updates architectural registers, and computes flags for ALU operations. A silicon-validation style test can run generated content through this model and compare observed behavior against expected architectural state.
+
+## Branch Predictor State Machine
+
+`TwoBitBranchPredictor` models the classic saturating counter predictor:
+
+- Strongly-not-taken
+- Weakly-not-taken
+- Weakly-taken
+- Strongly-taken
+
+Each observed branch outcome pushes the counter toward taken or not-taken. This gives branch-heavy synthetic content a concrete state machine to cover.
+
+## Synthetic OS-Like Content
+
+`python/synthetic_os.py` emits structured workloads for cache, branch, and mixed integer behavior. The goal is not to boot an OS; it is to generate targeted instruction and memory-access patterns analogous to synthetic validation content.

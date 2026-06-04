@@ -58,7 +58,7 @@ std::vector<Instruction> X86Decoder::decode(const std::vector<std::uint8_t>& byt
       instruction.operands.push_back({OperandKind::Register, kRegister32[opcode - 0xB8], 0});
       instruction.operands.push_back(
           {OperandKind::Immediate, hex_value(immediate), static_cast<std::int64_t>(immediate)});
-    } else if (opcode == 0x89 || opcode == 0x8B) {
+    } else if (opcode == 0x89 || opcode == 0x8B || opcode == 0x01 || opcode == 0x29) {
       if (pc >= bytes.size()) {
         throw std::runtime_error("truncated ModR/M byte");
       }
@@ -70,11 +70,20 @@ std::vector<Instruction> X86Decoder::decode(const std::vector<std::uint8_t>& byt
       if (mod != 0x3U) {
         throw std::runtime_error("only register-to-register MOV is supported");
       }
-      instruction.mnemonic = "mov";
-      if (opcode == 0x89) {
+      if (opcode == 0x01) {
+        instruction.mnemonic = "add";
+        instruction.operands.push_back({OperandKind::Register, kRegister32[rm], 0});
+        instruction.operands.push_back({OperandKind::Register, kRegister32[reg], 0});
+      } else if (opcode == 0x29) {
+        instruction.mnemonic = "sub";
+        instruction.operands.push_back({OperandKind::Register, kRegister32[rm], 0});
+        instruction.operands.push_back({OperandKind::Register, kRegister32[reg], 0});
+      } else if (opcode == 0x89) {
+        instruction.mnemonic = "mov";
         instruction.operands.push_back({OperandKind::Register, kRegister32[rm], 0});
         instruction.operands.push_back({OperandKind::Register, kRegister32[reg], 0});
       } else {
+        instruction.mnemonic = "mov";
         instruction.operands.push_back({OperandKind::Register, kRegister32[reg], 0});
         instruction.operands.push_back({OperandKind::Register, kRegister32[rm], 0});
       }

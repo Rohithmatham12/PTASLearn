@@ -7,7 +7,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(ptaslearn
   src/atpg.cpp
+  src/branch_predictor.cpp
   src/cache_mesi.cpp
+  src/cpu_model.cpp
   src/scan_chain.cpp
   src/x86_decoder.cpp
 )
@@ -27,7 +29,9 @@ enable_testing()
 
 add_executable(ptaslearn_tests
   tests/test_atpg.cpp
+  tests/test_branch_predictor.cpp
   tests/test_cache_mesi.cpp
+  tests/test_cpu_model.cpp
   tests/test_scan_chain.cpp
   tests/test_x86_decoder.cpp
   tests/test_main.cpp
